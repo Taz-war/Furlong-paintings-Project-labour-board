@@ -6,8 +6,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { CircularProgress, Grid } from "@mui/material";
+import { CircularProgress, Grid, IconButton, TextField } from "@mui/material";
 import { Box } from "@mui/system";
+import { SearchOutlined } from "@mui/icons-material";
+import { useState } from "react";
+// import { useState } from "react";
 
 const CustomTabelCell = ({ status, data, i, n }) => (
   <TableCell
@@ -15,25 +18,25 @@ const CustomTabelCell = ({ status, data, i, n }) => (
     sx={{
       zIndex: 0,
       position: "sticky",
-	  
+      padding: `${i === 7 ? "0px" : null}`,
       left: `${
         i === 0
           ? "0px"
           : i === 1
-          ? "223px"
+          ? "113px"
           : i === 2
-          ? "446px"
+          ? "296px"
           : i === 3
-          ? "539px"
+          ? "479px"
           : i === 4
-          ? "632px"
+          ? "562px"
           : i === 5
-          ? "725px"
+          ? "649px"
           : i === 6
-          ? "818px"
-          : null
+          ? "732px"
+          : "827px"
       }`,
-	  
+
       borderLeft: "1px solid black",
       outline: "1px solid black",
       outlineOffset: "-0.5px",
@@ -44,7 +47,11 @@ const CustomTabelCell = ({ status, data, i, n }) => (
           ? "yellow"
           : status === "Rectification"
           ? "red"
-          : i===4? '#a1d1a2':i===5?'#9ba3c9':'white'
+          : i === 5
+          ? "#a1d1a2"
+          : i === 6
+          ? "#9ba3c9"
+          : "white"
       }`,
       color: `${
         status === "In Progress"
@@ -65,14 +72,24 @@ const CustomTabelCell = ({ status, data, i, n }) => (
     }}
   >
     <p
-    //   title={i === 0 || i === 1 ? data : null}
-	 title={data}
+      //   title={i === 0 || i === 1 ? data : null}
+      title={data}
       style={{
-		margin:'0 auto',
-		padding:`${i>1?'0px':'auto'}`,
+        margin: "0 auto",
+        padding: `${i > 1 ? "0px" : "auto"}`,
         textOverflow: "ellipsis",
         overflow: "hidden",
-        width: `${i === 0 || i === 1 ? "190px" : "60px"}`,
+        width: `${
+          i === 0
+            ? "80px"
+            : i === 1
+            ? "150px"
+            : i === 2
+            ? "150px"
+            : i === 7
+            ? "100px"
+            : "50px"
+        }`,
       }}
     >
       {data}
@@ -86,9 +103,9 @@ const CustomTabelCells = ({ status, data, i, n }) => (
     size="small"
     sx={{
       zIndex: -2,
-    //   position: "sticky",
-	padding:0,
-	m:0,
+      //   position: "sticky",
+      padding: 0,
+      m: 0,
       left: `${
         i === 0
           ? "0px"
@@ -154,6 +171,8 @@ const textRotateStyle = {
 
 export default function LaborTable({ laborData }) {
   const [sorting, setSorting] = React.useState("All");
+  const [searchProject, setSearchProject] =React.useState('')
+  const [inputField,setInputField]=useState('')
   const rowData = [];
 
   if (laborData.length === 0) {
@@ -189,6 +208,7 @@ export default function LaborTable({ laborData }) {
 
   laborData.forEach((row) => {
     const labours = JSON.parse(row.labor_board_contractors_data);
+    // console.log(row);
 
     const outsider = [];
 
@@ -215,6 +235,7 @@ export default function LaborTable({ laborData }) {
 
     rowData.push({
       Client: row.Client,
+      Sale_Date: row.Date,
       Name: row.Name,
       summary: row.Project_Summary,
       office_budget: row.office_budget,
@@ -224,6 +245,17 @@ export default function LaborTable({ laborData }) {
       status: row.Project_Status,
     });
   });
+
+
+
+  const handleChange =(data)=>{
+    console.log(data)
+    setSearchProject(data)
+  }
+  const handleTab = () => {
+    
+    setInputField("");
+  };
 
   return (
     <TableContainer
@@ -246,7 +278,7 @@ export default function LaborTable({ laborData }) {
             }}
           >
             <TableCell
-              colSpan="4"
+              colSpan="5"
               sx={{
                 zIndex: 2,
                 position: "sticky",
@@ -256,17 +288,48 @@ export default function LaborTable({ laborData }) {
                 fontWeight: "bold",
                 fontSize: "25px",
                 color: "#fff",
-                padding: "50px 0px",
+                padding: "35px 0px",
+                pb:'20px',
                 outline: "1px solid black",
                 outlineOffset: "-0.5px",
               }}
             >
               Project Labour Board
+              <TextField
+                sx={{
+                  borderRadius: 20,
+                  display:"flex",
+                  m:'30px',
+                  borderColor:"white",
+                  marginBottom: "0px",
+                 
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "25px ",
+                    height: "37px ",
+                    borderColor:"white",
+                    backgroundColor: '#838ecc',
+                    color:"white",
+                  },
+                }}
+                // label="Search..." 
+                placeholder="Search Project"
+                size="small"
+                id="fullWidth"
+                // value={inputField}
+                onChange={(e) => handleChange(e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton onClick={() => handleTab()} size="small">
+                      <SearchOutlined fontSize="small"  sx={{color:"white"}}/>
+                    </IconButton>
+                  ),
+                }}
+              />
             </TableCell>
             <TableCell
               sx={{
                 zIndex: 2,
-                left: "632px",
+                left: "649px",
                 position: "sticky",
                 // borderLeft: "1px solid black",
                 outline: "1px solid black",
@@ -280,7 +343,7 @@ export default function LaborTable({ laborData }) {
                 sx={{
                   zIndex: 2,
                   left: `${
-                    index === 0 ? "725px" : index === 1 ? "818px" : null
+                    index === 0 ? "732px" : index === 1 ? "827px" : null
                   }`,
                   position: "sticky",
                   // borderLeft: "1px solid black",
@@ -315,7 +378,7 @@ export default function LaborTable({ laborData }) {
                   textAlign: "center",
                   backgroundColor: "#3f51b5",
                   color: "#fff",
-				  width:'100px',
+                  width: "100px",
                 }}
                 key={index}
               >
@@ -328,12 +391,13 @@ export default function LaborTable({ laborData }) {
               position: "sticky",
               left: 0,
               zIndex: 1,
-              top: 124,
+              top: 146.5,
               backgroundColor: "#fff",
               borderBottom: "1px solid black",
             }}
           >
             {[
+              "Sale Date",
               "Project",
               "Project summary",
               "Office Budget",
@@ -351,29 +415,34 @@ export default function LaborTable({ laborData }) {
                     index === 0
                       ? "0px"
                       : index === 1
-                      ? "223px"
+                      ? "113px"
                       : index === 2
-                      ? "446px"
+                      ? "296px"
                       : index === 3
-                      ? "539px"
+                      ? "479px"
                       : index === 4
-                      ? "632px"
+                      ? "562px"
                       : index === 5
-                      ? "725px"
+                      ? "649px"
                       : index === 6
-                      ? "818px"
-                      : null
+                      ? "732px"
+                      : "827px"
                   }`,
                   borderLeft: "1px solid black",
                   outline: "1px solid black",
                   outlineOffset: "-0.5px",
                   textAlign: "center",
-                  backgroundColor:index === 4 ? "#a1d1a2" : index===5?'#9ba3c9':"#ECEEF8",
-				  
-                //   fontWeight: index === 6 ? 600 : "normal",
-                //   writingMode: index === 6 ? "vertical-rl" : "horizontal-tb",
-                //   textOrientation: index === 6 ? "mixed" : "sideways",
-                  color: index === 4 ||index===5 ? "white" : "inherit",
+                  backgroundColor:
+                    index === 5
+                      ? "#a1d1a2"
+                      : index === 6
+                      ? "#9ba3c9"
+                      : "#ECEEF8",
+
+                  //   fontWeight: index === 6 ? 600 : "normal",
+                  //   writingMode: index === 6 ? "vertical-rl" : "horizontal-tb",
+                  //   textOrientation: index === 6 ? "mixed" : "sideways",
+                  color: index === 5 || index === 6 ? "white" : "inherit",
                 }}
               >
                 {label}
@@ -390,8 +459,8 @@ export default function LaborTable({ laborData }) {
                     outlineOffset: "-0.5px",
                     fontWeight: 600,
                     backgroundColor: "#ECEEF8",
-					width:'50px',
-					padding:0.5
+                    width: "50px",
+                    padding: 0.5,
                   }}
                 >
                   <p style={textRotateStyle}>Past</p>
@@ -406,8 +475,8 @@ export default function LaborTable({ laborData }) {
                     fontWeight: 600,
                     backgroundColor: "#ECEEF8",
                     color: "#4CAF50",
-					width:'50px',
-					padding:0.5
+                    width: "50px",
+                    padding: 0.5,
                   }}
                 >
                   <p style={textRotateStyle}>Due</p>
@@ -420,9 +489,15 @@ export default function LaborTable({ laborData }) {
         <TableBody>
           {rowData
             .filter((row) => sorting === "All" || row.status === sorting)
+            .filter((item) => {
+              return searchProject.toLowerCase() === ""
+                ? item
+                : item.Name.toLowerCase().includes(searchProject);
+            })
             .map((row, id) => (
               <TableRow key={id}>
                 {[
+                  row.Sale_Date,
                   row.Name,
                   row.summary,
                   row.office_budget,
@@ -438,6 +513,7 @@ export default function LaborTable({ laborData }) {
                     data={data}
                   />
                 ))}
+                {/* {console.log(row)} */}
                 {row.labor_board_contractors_data.map((item, index) => (
                   <React.Fragment key={index}>
                     <CustomTabelCells
