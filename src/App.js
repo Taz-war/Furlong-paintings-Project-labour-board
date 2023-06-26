@@ -88,7 +88,7 @@ function App() {
     >
       {zohoLoaded ? (
         laborData.length > 0 ? (
-          <LaborTable laborData={laborData} />
+          <LaborTable laborData={laborData} setLaborData={setLaborData}/>
         ) : (
           renderNoData()
         )

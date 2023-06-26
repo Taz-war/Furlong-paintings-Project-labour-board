@@ -6,10 +6,17 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { CircularProgress, Grid, IconButton, TextField } from "@mui/material";
+import {
+  CircularProgress,
+  Grid,
+  IconButton,
+  TableSortLabel,
+  TextField,
+} from "@mui/material";
 import { Box } from "@mui/system";
-import { SearchOutlined } from "@mui/icons-material";
+import { ForkLeft, SearchOutlined } from "@mui/icons-material";
 import { useState } from "react";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 // import { useState } from "react";
 
 const CustomTabelCell = ({ status, data, i, n }) => (
@@ -18,28 +25,29 @@ const CustomTabelCell = ({ status, data, i, n }) => (
     sx={{
       zIndex: 0,
       position: "sticky",
-      padding: `${i === 7 ? "0px" : null}`,
+      padding: `${i ===4||i ===5||i ===6||i ===7 ? "0px" : '6px 8px'}`,
       left: `${
         i === 0
           ? "0px"
           : i === 1
-          ? "113px"
+          ? "97px"
           : i === 2
-          ? "296px"
+          ? "264px"
           : i === 3
-          ? "479px"
+          ? "431px"
           : i === 4
-          ? "562px"
+          ? "510px"
           : i === 5
-          ? "649px"
+          ? "597px"
           : i === 6
-          ? "732px"
-          : "827px"
+          ? "657px"
+          : "751px"
       }`,
-
+      
       borderLeft: "1px solid black",
       outline: "1px solid black",
       outlineOffset: "-0.5px",
+      outlineWidth:'thin',
       backgroundColor: `${
         status === "In Progress"
           ? "#4CAF50"
@@ -67,15 +75,35 @@ const CustomTabelCell = ({ status, data, i, n }) => (
       whiteSpace: "nowrap",
       // overflow: "hidden",
       // textOverflow: "ellipsis",
-      width: "auto",
+      width: `${i===7?'80px':i===6?'40px':"auto"}`,
       tableLayout: "auto",
     }}
   >
-    <p
+    {i===0||i===1||i===2?<p
       //   title={i === 0 || i === 1 ? data : null}
       title={data}
       style={{
-        margin: "0 auto",
+        margin: `${i===7?'0px':"0 auto"}`,
+        padding: `${i > 1 ? "0px" : "auto"}`,
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        width: `${
+          i === 0
+            ? "80px"
+            : i === 1
+            ? "150px"
+            : "150px"  
+        }`,
+      }}
+    >
+      {data}
+    </p>:data}
+    {/* <p
+      //   title={i === 0 || i === 1 ? data : null}
+      title={data}
+      style={{
+        margin: `${i===7?'0px':"0 auto"}`,
         padding: `${i > 1 ? "0px" : "auto"}`,
         textOverflow: "ellipsis",
         overflow: "hidden",
@@ -87,13 +115,13 @@ const CustomTabelCell = ({ status, data, i, n }) => (
             : i === 2
             ? "150px"
             : i === 7
-            ? "100px"
+            ? "80px"
             : "50px"
         }`,
       }}
     >
       {data}
-    </p>
+    </p> */}
     {/* {data} */}
   </TableCell>
 );
@@ -103,27 +131,8 @@ const CustomTabelCells = ({ status, data, i, n }) => (
     size="small"
     sx={{
       zIndex: -2,
-      //   position: "sticky",
       padding: 0,
       m: 0,
-      left: `${
-        i === 0
-          ? "0px"
-          : i === 1
-          ? "223px"
-          : i === 2
-          ? "446px"
-          : i === 3
-          ? "539px"
-          : i === 4
-          ? "632px"
-          : i === 5
-          ? "725px"
-          : i === 6
-          ? "818px"
-          : null
-      }`,
-
       borderLeft: "1px solid black",
       backgroundColor: `${
         status === "In Progress"
@@ -145,9 +154,6 @@ const CustomTabelCells = ({ status, data, i, n }) => (
       }`,
       textAlign: "center",
       fontSize: "12px",
-      // whiteSpace: "nowrap",
-      // overflow: "hidden",
-      // textOverflow: "ellipsis",
       width: "auto",
       tableLayout: "auto",
     }}
@@ -169,11 +175,14 @@ const textRotateStyle = {
   OTransformOrigin: "50% 50%",
 };
 
-export default function LaborTable({ laborData }) {
+export default function LaborTable({ laborData, setLaborData }) {
   const [sorting, setSorting] = React.useState("All");
-  const [searchProject, setSearchProject] =React.useState('')
-  const [inputField,setInputField]=useState('')
-  const rowData = [];
+  const [searchProject, setSearchProject] = React.useState("");
+  const [inputField, setInputField] = useState("");
+  const [order, setOrder] = useState("dsc");
+  // const [click,setClick]=useState('')
+  var rowData = [];
+  const [sortData, setSortData] = useState([]);
 
   if (laborData.length === 0) {
     return (
@@ -205,6 +214,29 @@ export default function LaborTable({ laborData }) {
     "Andy",
     "Daniel",
   ];
+  // console.log(laborData);
+
+  const handleRequestSort = (d) => {
+    const newData = [];
+    console.log(d);
+    if (d === "dsc") {
+      setOrder("asc");
+      newData = laborData.sort(
+        (a, b) =>
+          Date.parse(new Date(a.Date.split("/").reverse().join("-"))) -
+          Date.parse(new Date(b.Date.split("/").reverse().join("-")))
+      );
+    } else if (d === "asc") {
+      setOrder("dsc");
+      newData = laborData.sort(
+        (a, b) =>
+          Date.parse(new Date(b.Date.split("/").reverse().join("-"))) -
+          Date.parse(new Date(a.Date.split("/").reverse().join("-")))
+      );
+    }
+
+    setSortData(newData);
+  };
 
   laborData.forEach((row) => {
     const labours = JSON.parse(row.labor_board_contractors_data);
@@ -246,14 +278,40 @@ export default function LaborTable({ laborData }) {
     });
   });
 
-
-
-  const handleChange =(data)=>{
-    console.log(data)
-    setSearchProject(data)
+  function descendingComparator(a, b, orderBy) {
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
+    return 0;
   }
+
+  function getComparator(order, orderBy) {
+    return order === "desc"
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
+  }
+
+  function stableSort(array, comparator) {
+    const stabilizedThis = array.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) {
+        return order;
+      }
+      return a[1] - b[1];
+    });
+    return stabilizedThis.map((el) => el[0]);
+  }
+
+  const handleChange = (data) => {
+    console.log(data);
+    setSearchProject(data);
+  };
+
   const handleTab = () => {
-    
     setInputField("");
   };
 
@@ -289,7 +347,7 @@ export default function LaborTable({ laborData }) {
                 fontSize: "25px",
                 color: "#fff",
                 padding: "35px 0px",
-                pb:'20px',
+                pb: "20px",
                 outline: "1px solid black",
                 outlineOffset: "-0.5px",
               }}
@@ -298,20 +356,20 @@ export default function LaborTable({ laborData }) {
               <TextField
                 sx={{
                   borderRadius: 20,
-                  display:"flex",
-                  m:'30px',
-                  borderColor:"white",
+                  display: "flex",
+                  m: "30px",
+                  borderColor: "white",
                   marginBottom: "0px",
-                 
+
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "25px ",
                     height: "37px ",
-                    borderColor:"white",
-                    backgroundColor: '#838ecc',
-                    color:"white",
+                    borderColor: "white",
+                    backgroundColor: "#838ecc",
+                    color: "white",
                   },
                 }}
-                // label="Search..." 
+                // label="Search..."
                 placeholder="Search Project"
                 size="small"
                 id="fullWidth"
@@ -320,7 +378,10 @@ export default function LaborTable({ laborData }) {
                 InputProps={{
                   endAdornment: (
                     <IconButton onClick={() => handleTab()} size="small">
-                      <SearchOutlined fontSize="small"  sx={{color:"white"}}/>
+                      <SearchOutlined
+                        fontSize="small"
+                        sx={{ color: "white" }}
+                      />
                     </IconButton>
                   ),
                 }}
@@ -329,7 +390,7 @@ export default function LaborTable({ laborData }) {
             <TableCell
               sx={{
                 zIndex: 2,
-                left: "649px",
+                left: "597px",
                 position: "sticky",
                 // borderLeft: "1px solid black",
                 outline: "1px solid black",
@@ -343,7 +404,7 @@ export default function LaborTable({ laborData }) {
                 sx={{
                   zIndex: 2,
                   left: `${
-                    index === 0 ? "732px" : index === 1 ? "827px" : null
+                    index === 0 ? "657px" : index === 1 ? "751px" : null
                   }`,
                   position: "sticky",
                   // borderLeft: "1px solid black",
@@ -372,9 +433,9 @@ export default function LaborTable({ laborData }) {
                 sx={{
                   // position:"relative",
                   zIndex: 1,
-                  // borderLeft: "1px solid black",
-                  outline: "1px solid black",
-                  outlineOffset: "-0.5px",
+                  borderLeft: "1px solid black",
+                  // outline: "1px solid black",
+                  // outlineOffset: "-0.5px",
                   textAlign: "center",
                   backgroundColor: "#3f51b5",
                   color: "#fff",
@@ -403,34 +464,37 @@ export default function LaborTable({ laborData }) {
               "Office Budget",
               "Asseses",
               "WIP",
-              "To Compelte",
+              "To Complete",
               "",
             ].map((label, index) => (
               <TableCell
                 key={index}
                 sx={{
+                  display:`${index===0?'flex':null}`,
+                  flexWrap:`${index===0?'wrap':null}`,
                   position: "sticky",
                   zIndex: 2,
                   left: `${
                     index === 0
                       ? "0px"
                       : index === 1
-                      ? "113px"
+                      ? "97px"
                       : index === 2
-                      ? "296px"
+                      ? "264px"
                       : index === 3
-                      ? "479px"
+                      ? "431px"
                       : index === 4
-                      ? "562px"
+                      ? "510px"
                       : index === 5
-                      ? "649px"
+                      ? "597px"
                       : index === 6
-                      ? "732px"
-                      : "827px"
+                      ? "657px"
+                      : "751px"
                   }`,
-                  borderLeft: "1px solid black",
+                  borderLeft: `${index===7?'none':"1px solid black"}`,
                   outline: "1px solid black",
                   outlineOffset: "-0.5px",
+                  outlineWidth:'thin',
                   textAlign: "center",
                   backgroundColor:
                     index === 5
@@ -438,14 +502,31 @@ export default function LaborTable({ laborData }) {
                       : index === 6
                       ? "#9ba3c9"
                       : "#ECEEF8",
-
-                  //   fontWeight: index === 6 ? 600 : "normal",
-                  //   writingMode: index === 6 ? "vertical-rl" : "horizontal-tb",
-                  //   textOrientation: index === 6 ? "mixed" : "sideways",
                   color: index === 5 || index === 6 ? "white" : "inherit",
+                  // height:`${index===0?'66px':'auto'}`,
+                  pb:`${index ===0?'10px':null}`,
+                  borderBottom:`${index===0?'1px solid black':null}`
                 }}
               >
+                {index === 0 ? (
+                  <TableSortLabel
+                    onClick={
+                      order === "dsc"
+                        ? () => handleRequestSort("dsc")
+                        : () => handleRequestSort("asc")
+                    }
+                    active={true}
+                    direction={order === "dsc" ? "desc" : "asc"}
+                    sx={{mt:2,p:0,display:"inline",justifyContent:'center',width:'30%',alignItems:'center'}}
+                  >
+                    {/* <Box component="span" sx={visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </Box> */}
+                  </TableSortLabel>
+                ) : null}
+                <Box sx={{width:'65%'}}>
                 {label}
+                </Box>
               </TableCell>
             ))}
             {rowData[0].labor_board_contractors_data?.map((painter) => (
@@ -454,12 +535,12 @@ export default function LaborTable({ laborData }) {
                   sx={{
                     zIndex: 1,
                     textAlign: "center",
-                    borderLeft: "1px solid black",
+                    // borderLeft: "1px solid black",
                     outline: "1px solid black",
-                    outlineOffset: "-0.5px",
+                    outlineOffset: "0px",
                     fontWeight: 600,
                     backgroundColor: "#ECEEF8",
-                    width: "50px",
+                    width: "49px",
                     padding: 0.5,
                   }}
                 >
@@ -469,13 +550,15 @@ export default function LaborTable({ laborData }) {
                   sx={{
                     zIndex: 1,
                     textAlign: "center",
-                    borderLeft: "1px solid black",
+                    // borderLeft: "1px solid black",
+                    // borderTop:'1px solid black',
                     outline: "1px solid black",
-                    outlineOffset: "-0.5px",
+                    outlineOffset: "0px",
+                    outlineWidth:'thin',
                     fontWeight: 600,
                     backgroundColor: "#ECEEF8",
                     color: "#4CAF50",
-                    width: "50px",
+                    width: "49px",
                     padding: 0.5,
                   }}
                 >
